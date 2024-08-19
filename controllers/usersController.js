@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const Note = require();
+const Note = require('../models/Note');
 const asyncHandler = require('express-async-handler');
 const bcrypt = require('bcrypt');
 
@@ -8,7 +8,7 @@ const bcrypt = require('bcrypt');
 // @access Private
 const getAllUsers = asyncHandler(async (req, res) => {
   const users = await User.find().select('-password').lean();
-  if (!users) {
+  if (!users?.length) {
     return res.status(400).json({ message: 'No users found' });
   }
   res.json(users);
@@ -25,19 +25,19 @@ const createNewUser = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
-  // check for duplicate
-  const duplicate = await User.findOne({ username }).lean().exex();
+  // check for duplicate username
+  const duplicate = await User.findOne({ username }).lean().exec();
   if (duplicate) {
     return res.status(409).json({ message: 'Duplicate username' });
   }
 
   // Hashed password
-  const hashedPwd = await bcrypt.hash(password, 12); // salt rounds
+  const hashedPwd = await bcrypt.hash(password, 10); // salt rounds
 
   const userObject = { username, password: hashedPwd, roles };
 
   // Create and store new user
-  const user = await user.create(userObject);
+  const user = await User.create(userObject);
 
   if (user) {
     //created
