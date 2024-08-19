@@ -27,6 +27,7 @@ const createNewUser = asyncHandler(async (req, res) => {
 
   // check for duplicate username
   const duplicate = await User.findOne({ username }).lean().exec();
+
   if (duplicate) {
     return res.status(409).json({ message: 'Duplicate username' });
   }
@@ -41,7 +42,7 @@ const createNewUser = asyncHandler(async (req, res) => {
 
   if (user) {
     //created
-    res.status(201).josn({ message: `New user ${username} created` });
+    res.status(201).json({ message: `New user ${username} created` });
   } else {
     res.status(400).json({ message: 'Invalid user data received' });
   }
